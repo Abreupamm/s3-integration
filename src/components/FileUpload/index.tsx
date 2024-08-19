@@ -13,14 +13,22 @@ const FileUpload: React.FC = () => {
 
   const handleUpload = async () => {
     if (selectedFile) {
-      try {
-        setUploadStatus('Uploading...');
-        const response = await uploadFile(selectedFile);
-        setUploadStatus('Upload successful');
-        console.log(response);
-      } catch (error) {
-        setUploadStatus('Upload failed');
-      }
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result?.toString().split(',')[1]; // Pega apenas a string base64, sem o prefixo data:<type>;base64,
+
+        if (base64String) {
+          try {
+            setUploadStatus('Uploading...');
+            const response = await uploadFile(base64String, selectedFile.name);
+            setUploadStatus('Upload successful');
+            console.log(response);
+          } catch (error) {
+            setUploadStatus('Upload failed');
+          }
+        }
+      };
+      reader.readAsDataURL(selectedFile);
     }
   };
 
