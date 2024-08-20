@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+// const API_URL = process.env.REACT_APP_API_URL;
 
 export const uploadFile = async (base64String: string, fileName: string) => {
   const payload = {
@@ -9,9 +9,9 @@ export const uploadFile = async (base64String: string, fileName: string) => {
   };
 
   try {
-    const response = await axios.post(`${API_URL}/upload`, payload, {
+    const response = await axios.post(`http://localhost:3000`, payload, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return response.data;

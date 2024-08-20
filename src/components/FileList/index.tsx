@@ -1,47 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { listFiles, downloadFile } from '../../services/upload/fileService';
+import React from 'react';
+import { useFileContext } from '../../context/FileContext';
 
 const FileList: React.FC = () => {
-  const [files, setFiles] = useState<{ Key: string }[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      setLoading(true);
-      try {
-        const data = await listFiles();
-        setFiles(data);
-      } catch (error) {
-        setError('Error fetching files');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFiles();
-  }, []);
-
-  const handleDownload = async (key: string) => {
-    try {
-      await downloadFile(key);
-    } catch (error) {
-      setError('Error downloading file');
-    }
-  };
+  const { files, fetchFiles } = useFileContext();
 
   return (
-    <div>
-      <h2>Available Files</h2>
-      {loading && <p>Loading files...</p>}
-      {error && <p>{error}</p>}
-      <ul>
-        {files.map((file) => (
-          <li key={file.Key}>
-            {file.Key} <button onClick={() => handleDownload(file.Key)}>Download</button>
-          </li>
-        ))}
-      </ul>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <h2>Arquivos disponíveis</h2>
+      {files.length === 0 ? <span>No files</span> : (
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+          {files.map((file) => (
+            <li key={file.fileName} style={{ margin: '10px', display: 'flex', alignItems: 'center', width: '500px' }}>
+              <img 
+                src={file.url} 
+                alt={file.fileName} 
+                width='200px'
+                height='100%'
+                style={{ objectFit: 'cover', marginRight: '10px', background: 'black' }} 
+              />
+              <div style={{ flex: 1 , textAlign: 'center'}}>
+                {file.fileName}
+              </div>
+              <button 
+                onClick={() => window.open(file.url, '_blank')}
+                style={{ padding: '5px 10px', cursor: 'pointer' }}
+              >
+                Download
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

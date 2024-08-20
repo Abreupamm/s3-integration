@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { uploadFile } from '../../services/upload/uploadService';
+import { uploadFile } from '../../services/uploadService';
+import { useFileContext } from '../../context/FileContext';
 
 const FileUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('');
+  const { addFile } = useFileContext();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -21,6 +23,7 @@ const FileUpload: React.FC = () => {
           try {
             setUploadStatus('Uploading...');
             const response = await uploadFile(base64String, selectedFile.name);
+            addFile({ fileName: selectedFile.name, url: `https://teste-devmeeting.s3.amazonaws.com/${selectedFile.name}` });
             setUploadStatus('Upload successful');
             console.log(response);
           } catch (error) {
@@ -33,9 +36,12 @@ const FileUpload: React.FC = () => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
+    < div style={{ textAlign: 'center' }}>
+      <h1 >Upload s3</h1>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <input type="file" onChange={handleFileChange} style={{ marginRight: '20px' }} />
+        <button onClick={handleUpload}>Upload</button>
+      </div>
       <p>{uploadStatus}</p>
     </div>
   );
